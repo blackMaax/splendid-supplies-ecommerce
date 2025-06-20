@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react'
-import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Upload, X, Image as ImageIcon, Link } from 'lucide-react'
 import Image from 'next/image'
 
 interface ImageUploadProps {
@@ -22,6 +22,8 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showUrlInput, setShowUrlInput] = useState(false)
+  const [urlInput, setUrlInput] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFiles = async (files: FileList) => {
@@ -70,7 +72,13 @@ export default function ImageUpload({
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
+        // Show helpful message for production environment
+        if (errorData.suggestion) {
+          setError(`${errorData.error}\n\n${errorData.suggestion}`)
+        } else {
+          throw new Error(errorData.error || 'Upload failed')
+        }
+        return
       }
 
       const result = await response.json()
@@ -126,6 +134,33 @@ export default function ImageUpload({
     fileInputRef.current?.click()
   }
 
+  const handleUrlAdd = () => {
+    if (!urlInput.trim()) {
+      setError('Please enter a valid URL')
+      return
+    }
+
+    // Basic URL validation
+    try {
+      new URL(urlInput)
+    } catch {
+      setError('Please enter a valid URL')
+      return
+    }
+
+    setError(null)
+    
+    if (multiple) {
+      const newImages = [...currentImages, urlInput.trim()]
+      onUpload(newImages)
+    } else {
+      onUpload([urlInput.trim()])
+    }
+    
+    setUrlInput('')
+    setShowUrlInput(false)
+  }
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Upload Area */}
@@ -170,10 +205,58 @@ export default function ImageUpload({
         </div>
       </div>
 
+      {/* Manual URL Input */}
+      <div className="space-y-2">
+        {!showUrlInput ? (
+          <button
+            type="button"
+            onClick={() => setShowUrlInput(true)}
+            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+          >
+            <Link className="w-4 h-4" />
+            Add image URL manually
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              placeholder="Enter image URL (https://...)"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleUrlAdd()
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleUrlAdd}
+              className="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowUrlInput(false)
+                setUrlInput('')
+                setError(null)
+              }}
+              className="px-3 py-2 border border-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-md p-3">
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600 whitespace-pre-line">{error}</p>
         </div>
       )}
 
