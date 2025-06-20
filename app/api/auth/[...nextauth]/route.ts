@@ -5,9 +5,9 @@ import bcrypt from 'bcryptjs'
 // Simple in-memory admin user - in production, use a database
 const ADMIN_USER = {
   id: '1',
-  email: 'admin@splendidsupplies.com',
-  // Password: "admin123" - hash generated with bcrypt
-  password: '$2b$12$T2L2.w4/oURz/qgm8r53fOodcv1SVlv0yCGHk5rRKKNRPNiZC5I2u',
+  username: 'blackMax',
+  // Password: "mayer2credits8FANCIES" - hash generated with bcrypt
+  password: '$2b$12$N5.Ehbtacm6HQ28LEQ0J3O3LJsT230.Z4YYOE2MSi.yZsWPqn.NYa',
   name: 'Admin User',
   role: 'admin'
 }
@@ -17,16 +17,16 @@ const handler = NextAuth({
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.username || !credentials?.password) {
           return null
         }
 
-        // Check if email matches admin user
-        if (credentials.email !== ADMIN_USER.email) {
+        // Check if username matches admin user
+        if (credentials.username !== ADMIN_USER.username) {
           return null
         }
 
@@ -42,7 +42,7 @@ const handler = NextAuth({
 
         return {
           id: ADMIN_USER.id,
-          email: ADMIN_USER.email,
+          email: ADMIN_USER.username + '@splendidsupplies.com', // For NextAuth compatibility
           name: ADMIN_USER.name,
           role: ADMIN_USER.role
         }
