@@ -50,13 +50,21 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
+    console.log('PUT request for product ID:', id)
+    
     const updatedProduct: Partial<Product> = await request.json()
+    console.log('Updated product data:', updatedProduct)
+    
     const data = await readProductsFile()
+    console.log('Current products count:', data.products.length)
     
     const productIndex = data.products.findIndex((p: Product) => p.id === id)
     if (productIndex === -1) {
+      console.log('Product not found with ID:', id)
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
+    
+    console.log('Found product at index:', productIndex)
     
     // Update product with new data and timestamp
     data.products[productIndex] = {
@@ -67,15 +75,23 @@ export async function PUT(
       inStock: updatedProduct.stock !== undefined ? updatedProduct.stock > 0 : data.products[productIndex].inStock,
     }
     
+    console.log('Updated product:', data.products[productIndex])
+    
     const success = await writeProductsFile(data)
     if (!success) {
+      console.log('Failed to write products file')
       return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
     }
     
+    console.log('Product updated successfully')
     return NextResponse.json(data.products[productIndex])
   } catch (error) {
     console.error('Error updating product:', error)
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    return NextResponse.json({ 
+      error: 'Failed to update product',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
 
