@@ -1,0 +1,57 @@
+{
+  "products": [
+    {
+      "name": "Lead Sealant 310ml – Waterproof Roofing Joint Sealant",
+      "price": 4.99,
+      "originalPrice": 5.99,
+      "salePrice": 4.49,
+      "onSale": false,
+      "image": "/uploads/1750429036321-h5g0k4e6at.jpg",
+      "description": "High-quality lead sealant designed for making watertight, flexible joints between lead flashings and masonry or brickwork. Ideal for roof and gutter repairs, it offers excellent adhesion, weather resistance, and long-lasting performance. Easy to apply with a standard sealant gun.",
+      "category": "Building Supplies",
+      "images": [],
+      "stock": 120,
+      "inStock": true,
+      "lowStockThreshold": 5,
+      "seoTitle": "Lead Sealant 310ml | Roofing & Flashing Sealant | Waterproof",
+      "seoDescription": "Buy premium Lead Sealant 310ml – perfect for watertight, flexible joints between lead and brickwork. Durable, weatherproof, and easy to apply.",
+      "seoKeywords": [
+        "lead sealant",
+        "roofing sealant",
+        "flashing sealant",
+        "waterproof joint filler",
+        "lead flashing adhesive",
+        "310ml sealant"
+      ],
+      "tags": [
+        "bestseller",
+        "roofing",
+        "waterproof",
+        "flashing",
+        "sealant"
+      ],
+      "productUrl": "lead-sealant-waterproof-joint-sealer",
+      "supplierUrl": "",
+      "brand": "Midland Lead",
+      "model": "Lead Sealant 310ml",
+      "weight": 0.3,
+      "dimensions": {
+        "length": 23,
+        "width": 5,
+        "height": 5
+      },
+      "featured": false,
+      "active": true,
+      "id": "5",
+      "createdAt": "2025-06-20T14:18:48.704Z",
+      "updatedAt": "2025-06-20T14:32:47.615Z"
+    }
+  ],
+  "categories": [
+    "All Products",
+    "Tools, Equipment & Workwear",
+    "Building Supplies",
+    "Roofing Supplies",
+    "Cleaning Supplies"
+  ]
+}

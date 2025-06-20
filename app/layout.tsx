@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter, Bebas_Neue } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "./context/CartContext"
+import AuthSessionProvider from "./components/SessionProvider"
 
 const logoFont = Bebas_Neue({
   subsets: ["latin"],
@@ -27,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${logoFont.variable}`}>
-        <CartProvider>{children}</CartProvider>
+        <AuthSessionProvider>
+          <CartProvider>{children}</CartProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   )

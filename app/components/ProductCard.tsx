@@ -53,7 +53,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   return (
     <>
       <div className="product-card product-card-animate group" style={{ animationDelay: `${index * 0.1}s` }}>
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product.productUrl || product.id}`}>
           <div className="product-image-wrapper h-40 sm:h-72 flex items-center justify-center p-3 sm:p-8">
             <Image
               src={product.image || "/placeholder.svg"}
@@ -68,17 +68,30 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors text-sm sm:text-lg leading-tight">
               {product.name}
             </h3>
-            <p className="product-price text-sm sm:text-base">£{product.price.toFixed(2)}</p>
+            <div className="flex items-center justify-between">
+              <p className="product-price text-sm sm:text-base">£{product.price.toFixed(2)}</p>
+              {product.stock !== undefined && (
+                <div className="text-xs sm:text-sm">
+                  {product.stock > 10 ? (
+                    <span className="text-green-600 font-medium">In Stock</span>
+                  ) : product.stock > 0 ? (
+                    <span className="text-orange-600 font-medium">Only {product.stock} left</span>
+                  ) : (
+                    <span className="text-red-600 font-medium">Out of Stock</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </Link>
 
         <div className="px-3 pb-3 sm:px-6 sm:pb-6">
           <button
             onClick={handleAddToCart}
-            disabled={isAdding}
-            className={`premium-add-to-cart w-full text-sm sm:text-base py-2 sm:py-3 ${isAdding ? "adding" : ""}`}
+            disabled={isAdding || (product.stock !== undefined && product.stock <= 0)}
+            className={`premium-add-to-cart w-full text-sm sm:text-base py-2 sm:py-3 ${isAdding ? "adding" : ""} ${(product.stock !== undefined && product.stock <= 0) ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {isAdding ? "✓ Added!" : "Add to Cart"}
+            {(product.stock !== undefined && product.stock <= 0) ? "Out of Stock" : isAdding ? "✓ Added!" : "Add to Cart"}
           </button>
         </div>
       </div>

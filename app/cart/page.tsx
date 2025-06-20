@@ -29,6 +29,7 @@ export default function CartPage() {
     try {
       // Prepare cart items for Stripe
       const checkoutItems = items.map(item => ({
+        id: item.id,
         name: item.name,
         description: item.description || `${item.category} - ${item.name}`,
         price: item.price,
@@ -50,7 +51,12 @@ export default function CartPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+        if (data.error === 'Stock validation failed' && data.details) {
+          alert(`Stock Error:\n${data.details.join('\n')}\n\nPlease update your cart and try again.`)
+        } else {
+          alert(data.error || 'Failed to create checkout session')
+        }
+        return
       }
 
       // Redirect to Stripe checkout
@@ -79,9 +85,9 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white flex flex-col">
         <Header />
-        <div className="container mx-auto px-4 py-12 text-center">
+        <div className="flex-1 container mx-auto px-4 py-12 text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Your Cart is Empty</h1>
           <p className="text-gray-600 mb-8">Add some products to get started!</p>
           <Link
@@ -98,10 +104,10 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="flex-1 container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />

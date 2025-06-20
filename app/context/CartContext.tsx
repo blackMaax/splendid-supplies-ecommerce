@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useReducer, type ReactNode } from "react"
+import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react"
 import type { Product, CartItem, CartContextType } from "../types"
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -10,6 +10,7 @@ type CartAction =
   | { type: "REMOVE_FROM_CART"; payload: string }
   | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
   | { type: "CLEAR_CART" }
+  | { type: "LOAD_CART"; payload: CartItem[] }
 
 function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
   switch (action.type) {
@@ -31,13 +32,55 @@ function cartReducer(state: CartItem[], action: CartAction): CartItem[] {
     case "CLEAR_CART":
       return []
 
+    case "LOAD_CART":
+      return action.payload
+
     default:
       return state
   }
 }
 
+// Helper functions for localStorage
+const CART_STORAGE_KEY = 'splendid-supplies-cart'
+
+const saveCartToStorage = (items: CartItem[]) => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+    } catch (error) {
+      console.error('Failed to save cart to localStorage:', error)
+    }
+  }
+}
+
+const loadCartFromStorage = (): CartItem[] => {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : []
+    } catch (error) {
+      console.error('Failed to load cart from localStorage:', error)
+      return []
+    }
+  }
+  return []
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(cartReducer, [])
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = loadCartFromStorage()
+    if (savedCart.length > 0) {
+      dispatch({ type: "LOAD_CART", payload: savedCart })
+    }
+  }, [])
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
+    saveCartToStorage(items)
+  }, [items])
 
   const addToCart = (product: Product) => {
     dispatch({ type: "ADD_TO_CART", payload: product })
