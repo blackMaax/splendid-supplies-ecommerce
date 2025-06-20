@@ -30,17 +30,39 @@ async function writeProductsFile(data: ProductData): Promise<boolean> {
   }
 }
 
-// KV operations (for production) - will be added later when needed
+// KV operations (for production)
 async function readProductsKV(): Promise<ProductData> {
-  // This will use Vercel KV when environment variables are available
-  // For now, fallback to file system
-  return await readProductsFile()
+  try {
+    // Dynamically import KV to avoid build issues
+    const { kv } = await import('@vercel/kv')
+    const [products, categories] = await Promise.all([
+      kv.get<Product[]>('products'),
+      kv.get<string[]>('categories')
+    ])
+    return { 
+      products: products || [], 
+      categories: categories || [] 
+    }
+  } catch (error) {
+    console.error('Error reading from KV:', error)
+    // Fallback to file system if KV fails
+    return await readProductsFile()
+  }
 }
 
 async function writeProductsKV(data: ProductData): Promise<boolean> {
-  // This will use Vercel KV when environment variables are available
-  // For now, fallback to file system
-  return await writeProductsFile(data)
+  try {
+    // Dynamically import KV to avoid build issues
+    const { kv } = await import('@vercel/kv')
+    await Promise.all([
+      kv.set('products', data.products),
+      kv.set('categories', data.categories)
+    ])
+    return true
+  } catch (error) {
+    console.error('Error writing to KV:', error)
+    return false
+  }
 }
 
 // Check if we should use KV (when KV environment variables are available)
@@ -116,14 +138,36 @@ export async function getCategories(): Promise<string[]> {
   return data.categories
 }
 
-// Migration function - can be used later when KV is set up
+// Migration function - transfers data from JSON to KV
 export async function migrateToKV(): Promise<boolean> {
   if (!shouldUseKV()) {
     console.log('KV not available, migration skipped')
     return false
   }
   
-  // This will be implemented when KV is properly set up
-  console.log('KV migration will be implemented when needed')
-  return true
+  try {
+    // Read from local file
+    const fileData = await readProductsFile()
+    
+    // Check if KV already has data
+    const { kv } = await import('@vercel/kv')
+    const existingProducts = await kv.get<Product[]>('products')
+    
+    if (existingProducts && existingProducts.length > 0) {
+      console.log('KV already has data, migration skipped')
+      return true
+    }
+    
+    // Write to KV
+    const success = await writeProductsKV(fileData)
+    
+    if (success) {
+      console.log(`Migration successful: ${fileData.products.length} products, ${fileData.categories.length} categories`)
+    }
+    
+    return success
+  } catch (error) {
+    console.error('Migration failed:', error)
+    return false
+  }
 } 
