@@ -15,6 +15,12 @@ export async function POST(request: NextRequest) {
     const uploadedFiles: string[] = []
     const isProduction = process.env.NODE_ENV === 'production'
 
+    console.log('Upload environment:', { 
+      isProduction, 
+      hasBlobToken: !!process.env.BLOB_READ_WRITE_TOKEN,
+      nodeEnv: process.env.NODE_ENV
+    })
+
     for (const file of files) {
       if (!file.type.startsWith('image/')) {
         return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
@@ -32,11 +38,29 @@ export async function POST(request: NextRequest) {
       const filename = `${timestamp}-${randomString}.${extension}`
 
       if (isProduction) {
-        // Use Vercel Blob in production
-        const blob = await put(filename, file, {
-          access: 'public',
-        })
-        uploadedFiles.push(blob.url)
+        // Check if Blob token is available
+        if (!process.env.BLOB_READ_WRITE_TOKEN) {
+          return NextResponse.json({ 
+            error: 'Vercel Blob is not configured. Please create a Blob store in your Vercel dashboard.',
+            suggestion: 'Go to your Vercel project → Storage tab → Create Blob store'
+          }, { status: 500 })
+        }
+
+        try {
+          // Use Vercel Blob in production
+          console.log('Uploading to Vercel Blob:', filename)
+          const blob = await put(filename, file, {
+            access: 'public',
+          })
+          console.log('Blob upload successful:', blob.url)
+          uploadedFiles.push(blob.url)
+        } catch (blobError) {
+          console.error('Vercel Blob upload error:', blobError)
+          return NextResponse.json({ 
+            error: 'Failed to upload to Vercel Blob',
+            details: blobError instanceof Error ? blobError.message : 'Unknown blob error'
+          }, { status: 500 })
+        }
       } else {
         // Use local file storage in development
         const uploadDir = path.join(process.cwd(), 'public', 'uploads')
