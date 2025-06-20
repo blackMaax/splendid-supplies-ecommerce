@@ -125,7 +125,28 @@ export default function ImageUpload({
     }
   }
 
-  const removeImage = (indexToRemove: number) => {
+  const removeImage = async (indexToRemove: number) => {
+    const imageToDelete = currentImages[indexToRemove]
+    
+    // Try to delete from server if it's an uploaded image
+    if (imageToDelete && (imageToDelete.startsWith('/uploads/') || imageToDelete.includes('vercel-storage.com'))) {
+      try {
+        const response = await fetch(`/api/upload/delete?url=${encodeURIComponent(imageToDelete)}`, {
+          method: 'DELETE'
+        })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.warn('Failed to delete image from server:', errorData.error)
+          // Continue with removal from UI even if server deletion fails
+        }
+      } catch (error) {
+        console.warn('Error deleting image from server:', error)
+        // Continue with removal from UI even if server deletion fails
+      }
+    }
+    
+    // Remove from UI
     const updatedImages = currentImages.filter((_, index) => index !== indexToRemove)
     onUpload(updatedImages)
   }
@@ -285,11 +306,12 @@ export default function ImageUpload({
                 </div>
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation()
-                    removeImage(index)
+                    await removeImage(index)
                   }}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  title="Delete image"
                 >
                   <X className="w-3 h-3" />
                 </button>

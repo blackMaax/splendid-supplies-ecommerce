@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { put } from '@vercel/blob'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if we're in a production environment where file uploads won't work
-    const isProduction = process.env.NODE_ENV === 'production' && process.env.VERCEL
-
-    if (isProduction) {
-      return NextResponse.json({ 
-        error: 'File uploads are not supported in production. Please use image URLs instead or consider setting up cloud storage (AWS S3, Cloudinary, etc.).',
-        suggestion: 'Use the "Manual URL Input" option below the upload area.'
-      }, { status: 400 })
-    }
-
     const data = await request.formData()
     const files: File[] = data.getAll('files') as File[]
 
@@ -22,15 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const uploadedFiles: string[] = []
-
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-    try {
-      await mkdir(uploadDir, { recursive: true })
-    } catch (error) {
-      // Directory might already exist, which is fine
-      console.log('Upload directory creation note:', error)
-    }
+    const isProduction = process.env.NODE_ENV === 'production'
 
     for (const file of files) {
       if (!file.type.startsWith('image/')) {
@@ -48,15 +31,28 @@ export async function POST(request: NextRequest) {
       const extension = file.name.split('.').pop()
       const filename = `${timestamp}-${randomString}.${extension}`
 
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
+      if (isProduction) {
+        // Use Vercel Blob in production
+        const blob = await put(filename, file, {
+          access: 'public',
+        })
+        uploadedFiles.push(blob.url)
+      } else {
+        // Use local file storage in development
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+        try {
+          await mkdir(uploadDir, { recursive: true })
+        } catch (error) {
+          // Directory might already exist, which is fine
+          console.log('Upload directory creation note:', error)
+        }
 
-      // Save file
-      const filepath = path.join(uploadDir, filename)
-      await writeFile(filepath, buffer)
-
-      // Return relative path for use in the app
-      uploadedFiles.push(`/uploads/${filename}`)
+        const bytes = await file.arrayBuffer()
+        const buffer = Buffer.from(bytes)
+        const filepath = path.join(uploadDir, filename)
+        await writeFile(filepath, buffer)
+        uploadedFiles.push(`/uploads/${filename}`)
+      }
     }
 
     return NextResponse.json({ 
