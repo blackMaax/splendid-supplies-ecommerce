@@ -67,8 +67,7 @@ async function writeProductsKV(data: ProductData): Promise<boolean> {
 
 // Check if we should use KV (when KV environment variables are available)
 const shouldUseKV = () => {
-  const hasKV = process.env.NODE_ENV === 'production' && 
-         process.env.KV_REST_API_URL && 
+  const hasKV = process.env.KV_REST_API_URL && 
          (process.env.KV_REST_API_TOKEN || process.env.KV_REST_API_READ_ONLY_TOKEN)
   
   console.log('KV Environment Check:', {
