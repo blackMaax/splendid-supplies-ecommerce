@@ -52,8 +52,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
 
   return (
     <>
-      <div className="product-card product-card-animate group" style={{ animationDelay: `${index * 0.1}s` }}>
-        <Link href={`/product/${product.productUrl || product.id}`}>
+      <div className="product-card product-card-animate group h-full flex flex-col" style={{ animationDelay: `${index * 0.1}s` }}>
+        <Link href={`/product/${product.productUrl || product.id}`} className="flex-1 flex flex-col">
           <div className="product-image-wrapper h-40 sm:h-72 flex items-center justify-center p-3 sm:p-8">
             <Image
               src={product.image || "/placeholder.svg"}
@@ -64,11 +64,11 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             />
           </div>
 
-          <div className="p-3 sm:p-6">
-            <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors text-sm sm:text-lg leading-tight">
+          <div className="p-3 sm:p-6 flex-1 flex flex-col">
+            <h3 className="font-bold text-gray-800 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-900 transition-colors text-sm sm:text-lg leading-tight min-h-[2.5rem] sm:min-h-[3.5rem]">
               {product.name}
             </h3>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mt-auto">
               <p className="product-price text-sm sm:text-base">£{product.price.toFixed(2)}</p>
               {product.stock !== undefined && (
                 <div className="text-xs sm:text-sm">
@@ -85,7 +85,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           </div>
         </Link>
 
-        <div className="px-3 pb-3 sm:px-6 sm:pb-6">
+        <div className="px-3 pb-3 sm:px-6 sm:pb-6 mt-auto">
           <button
             onClick={handleAddToCart}
             disabled={isAdding || (product.stock !== undefined && product.stock <= 0)}
