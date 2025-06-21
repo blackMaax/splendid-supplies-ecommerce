@@ -57,21 +57,52 @@ export async function POST(request: NextRequest) {
     }
 
     // Create line items for Stripe
-    const lineItems = items.map((item: any) => ({
-      price_data: {
-        currency: 'gbp',
-        product_data: {
-          name: item.name,
-          description: item.description,
-          images: item.image ? [item.image.startsWith('http') ? item.image : `${process.env.NEXT_PUBLIC_DOMAIN}${item.image}`] : [],
-          metadata: {
-            product_id: item.id,
+    const lineItems = items.map((item: any) => {
+      // Process image URL for Stripe compatibility
+      let imageUrl = null
+      if (item.image) {
+        if (item.image.startsWith('http')) {
+          // Already a full URL (Unsplash, Vercel Blob, etc.)
+          imageUrl = item.image
+        } else if (item.image.startsWith('/')) {
+          // Relative path from public directory
+          imageUrl = `${process.env.NEXT_PUBLIC_DOMAIN}${item.image}`
+        } else {
+          // Assume it's a filename in public directory
+          imageUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/${item.image}`
+        }
+        
+        // Ensure the URL is properly formatted for Stripe
+        try {
+          new URL(imageUrl)
+        } catch (error) {
+          console.error(`Invalid image URL for Stripe: ${imageUrl}`)
+          imageUrl = null // Don't send invalid URLs to Stripe
+        }
+      }
+
+      // Debug logging for image URL processing
+      console.log(`Processing item: ${item.name}`)
+      console.log(`Original image: ${item.image}`)
+      console.log(`Processed imageUrl: ${imageUrl}`)
+      console.log(`NEXT_PUBLIC_DOMAIN: ${process.env.NEXT_PUBLIC_DOMAIN}`)
+
+      return {
+        price_data: {
+          currency: 'gbp',
+          product_data: {
+            name: item.name,
+            description: item.description,
+            images: imageUrl ? [imageUrl] : [],
+            metadata: {
+              product_id: item.id,
+            },
           },
+          unit_amount: Math.round(item.price * 100), // Convert to pence
         },
-        unit_amount: Math.round(item.price * 100), // Convert to pence
-      },
-      quantity: item.quantity,
-    }))
+        quantity: item.quantity,
+      }
+    })
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
