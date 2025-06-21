@@ -92,10 +92,7 @@ export default function FAQPage() {
           question: 'Are product descriptions accurate?',
           answer: 'We strive for accuracy in all product descriptions and images. However, specifications may vary slightly, and colors may appear different on various screens. Contact us if you need specific details.'
         },
-        {
-          question: 'Do you offer warranties?',
-          answer: 'Many of our products come with manufacturer warranties. Warranty terms vary by product and manufacturer. Check individual product pages for warranty information or contact us for details.'
-        },
+
         {
           question: 'Can you recommend products for my project?',
           answer: 'Absolutely! Our team has extensive experience with tools and building supplies. Call us at 0207 101 3408 to discuss your project requirements and get expert recommendations.'

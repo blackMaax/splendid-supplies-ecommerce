@@ -230,21 +230,7 @@ export default function ProductSlugPage() {
         </div>
       ),
     },
-    {
-      id: "warranty",
-      title: "Warranty & Returns",
-      icon: <CheckCircle className="w-5 h-5" />,
-      content: (
-        <div className="space-y-3">
-          <p>12-month warranty included. 30-day return policy for unused items in original packaging.</p>
-          <ul className="list-disc list-inside text-sm space-y-1">
-            <li>Full refund within 30 days</li>
-            <li>Free return shipping on defective items</li>
-            <li>Manufacturer warranty support</li>
-          </ul>
-        </div>
-      ),
-    },
+
   ]
 
   return (
@@ -326,11 +312,7 @@ export default function ProductSlugPage() {
                   </div>
                 )}
                 
-                {/* Warranty Badge */}
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-4 h-4 text-blue-700" />
-                  <span className="font-medium text-sm">12 Month Warranty</span>
-                </div>
+
               </div>
             </div>
           </div>

@@ -53,7 +53,7 @@ export default function PrivacyPage() {
                   <li><strong>Contact Details:</strong> Name, email address, phone number</li>
                   <li><strong>Billing & Shipping:</strong> Addresses for order processing and delivery</li>
                   <li><strong>Payment Information:</strong> Processed securely by Stripe (we don't store card details)</li>
-                  <li><strong>Order History:</strong> Purchase records for customer service and warranty purposes</li>
+                  <li><strong>Order History:</strong> Purchase records for customer service purposes</li>
                 </ul>
               </div>
 

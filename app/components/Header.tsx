@@ -3,6 +3,7 @@
 import { ShoppingCart } from "lucide-react"
 import { useCart } from "../context/CartContext"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Header() {
   const { getTotalItems } = useCart()
@@ -14,10 +15,17 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex-1"></div>
 
-          <Link href="/" className="flex-1 text-center">
-            <h1 className="logo-font logo-industrial logo-glow text-5xl md:text-6xl font-bold text-[#f8c815] hover:text-[#f0c000] transition-all duration-500 transform hover:scale-105">
-              SPLENDID SUPPLIES
-            </h1>
+          <Link href="/" className="flex-1 flex justify-center items-center">
+            <div className="premium-logo-container transition-all duration-500 transform hover:scale-105">
+              <Image
+                src="/Splendid Supplies logo.webp"
+                alt="Splendid Supplies Logo"
+                width={280}
+                height={80}
+                className="h-12 md:h-16 w-auto drop-shadow-2xl"
+                priority
+              />
+            </div>
           </Link>
 
           <div className="flex-1 flex justify-end">
