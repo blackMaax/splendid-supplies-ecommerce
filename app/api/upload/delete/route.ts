@@ -2,14 +2,32 @@ import { NextRequest, NextResponse } from 'next/server'
 import { del } from '@vercel/blob'
 import { unlink } from 'fs/promises'
 import path from 'path'
+import { requireAdmin, getClientIP, rateLimit } from '../../../../lib/auth'
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check authentication for admin operations
+    const authCheck = await requireAdmin(request)
+    if (!authCheck.isAuthorized) {
+      return NextResponse.json({ error: authCheck.error }, { status: 401 })
+    }
+
+    // Rate limiting for file deletions
+    const clientIP = getClientIP(request)
+    if (!rateLimit(`admin-delete-file-${clientIP}`, 10, 60000)) {
+      return NextResponse.json({ error: 'Too many delete requests' }, { status: 429 })
+    }
+
     const { searchParams } = new URL(request.url)
     const imageUrl = searchParams.get('url')
 
     if (!imageUrl) {
       return NextResponse.json({ error: 'Image URL is required' }, { status: 400 })
+    }
+
+    // Validate URL format to prevent path traversal
+    if (imageUrl.includes('..') || imageUrl.includes('<') || imageUrl.includes('>')) {
+      return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
     }
 
     const isProduction = process.env.NODE_ENV === 'production'

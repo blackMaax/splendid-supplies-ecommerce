@@ -2,14 +2,32 @@ import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
+import { requireAdmin, getClientIP, rateLimit } from '../../../lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication for admin operations
+    const authCheck = await requireAdmin(request)
+    if (!authCheck.isAuthorized) {
+      return NextResponse.json({ error: authCheck.error }, { status: 401 })
+    }
+
+    // Rate limiting for file uploads
+    const clientIP = getClientIP(request)
+    if (!rateLimit(`admin-upload-${clientIP}`, 5, 60000)) {
+      return NextResponse.json({ error: 'Too many upload requests' }, { status: 429 })
+    }
+
     const data = await request.formData()
     const files: File[] = data.getAll('files') as File[]
 
     if (!files || files.length === 0) {
       return NextResponse.json({ error: 'No files received' }, { status: 400 })
+    }
+
+    // Limit number of files per request
+    if (files.length > 10) {
+      return NextResponse.json({ error: 'Too many files. Maximum 10 files per upload.' }, { status: 400 })
     }
 
     const uploadedFiles: string[] = []
@@ -26,15 +44,32 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
       }
 
+      // Enhanced file type validation
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+      if (!allowedTypes.includes(file.type.toLowerCase())) {
+        return NextResponse.json({ error: `File type ${file.type} is not allowed. Only JPEG, PNG, WebP, and GIF are allowed.` }, { status: 400 })
+      }
+
       // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 })
       }
 
-      // Generate unique filename
+      // Validate filename
+      if (file.name.length > 100) {
+        return NextResponse.json({ error: 'Filename too long' }, { status: 400 })
+      }
+
+      // Generate unique filename with better randomness
       const timestamp = Date.now()
       const randomString = Math.random().toString(36).substring(2, 15)
-      const extension = file.name.split('.').pop()
+      const extension = file.name.split('.').pop()?.toLowerCase()
+      
+      // Validate extension
+      if (!extension || !['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(extension)) {
+        return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 })
+      }
+      
       const filename = `${timestamp}-${randomString}.${extension}`
 
       if (isProduction) {
