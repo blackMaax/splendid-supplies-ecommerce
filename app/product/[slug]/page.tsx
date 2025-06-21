@@ -223,10 +223,11 @@ export default function ProductSlugPage() {
       content: (
         <div className="space-y-3">
           <p>Free UK delivery on orders over £50. Standard delivery takes 2-3 business days.</p>
-          <div className="bg-green-50 p-3 rounded-lg">
-            <div className="flex items-center text-green-700">
+          <p className="text-sm text-gray-600">Orders under £50 incur a £4.99 shipping charge.</p>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center text-blue-700">
               <CheckCircle className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">This item qualifies for free delivery</span>
+              <span className="text-sm font-medium">Add more items to qualify for free delivery</span>
             </div>
           </div>
         </div>
@@ -331,10 +332,10 @@ export default function ProductSlugPage() {
                   )}
                 </div>
 
-                {/* Free Shipping */}
+                {/* Shipping Info */}
                 <div className="flex items-center space-x-2">
-                  <Truck className="w-4 h-4 text-green-700" />
-                  <span className="font-semibold text-sm">Free UK Delivery</span>
+                  <Truck className="w-4 h-4 text-blue-700" />
+                  <span className="font-semibold text-sm">Free UK Delivery Over £50</span>
                 </div>
 
                 {/* Estimated Delivery */}

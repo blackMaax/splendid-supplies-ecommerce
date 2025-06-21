@@ -102,6 +102,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return items.reduce((total, item) => total + item.price * item.quantity, 0)
   }
 
+  const getSubtotal = () => {
+    return items.reduce((total, item) => total + item.price * item.quantity, 0)
+  }
+
+  const getShippingCost = () => {
+    const subtotal = getSubtotal()
+    const FREE_SHIPPING_THRESHOLD = 50
+    return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 4.99
+  }
+
+  const getTotalWithShipping = () => {
+    return getSubtotal() + getShippingCost()
+  }
+
+  const isEligibleForFreeShipping = () => {
+    return getSubtotal() >= 50
+  }
+
   const clearCart = () => {
     dispatch({ type: "CLEAR_CART" })
   }
@@ -115,6 +133,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         getTotalItems,
         getTotalPrice,
+        getSubtotal,
+        getShippingCost,
+        getTotalWithShipping,
+        isEligibleForFreeShipping,
         clearCart,
       }}
     >

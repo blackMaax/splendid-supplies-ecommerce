@@ -3,13 +3,13 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Plus, Minus, Trash2, CreditCard } from "lucide-react"
+import { ArrowLeft, Plus, Minus, Trash2, CreditCard, Truck } from "lucide-react"
 import { useCart } from "../context/CartContext"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 
 export default function CartPage() {
-  const { items, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart()
+  const { items, updateQuantity, removeFromCart, getTotalPrice, getSubtotal, getShippingCost, getTotalWithShipping, isEligibleForFreeShipping, clearCart } = useCart()
   const [isClearing, setIsClearing] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
@@ -178,20 +178,56 @@ export default function CartPage() {
           <div className="lg:col-span-1">
             <div className="bg-gray-50 rounded-lg p-6 sticky top-4">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+              
+              {/* Free Shipping Progress */}
+              {!isEligibleForFreeShipping() && (
+                <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between text-sm text-blue-700 mb-2">
+                    <span>Free shipping progress</span>
+                    <span>£{(50 - getSubtotal()).toFixed(2)} to go</span>
+                  </div>
+                  <div className="w-full bg-blue-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${Math.min((getSubtotal() / 50) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">Add £{(50 - getSubtotal()).toFixed(2)} more to qualify for free delivery!</p>
+                </div>
+              )}
+              
+              {isEligibleForFreeShipping() && (
+                <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center text-green-700">
+                    <Truck className="w-4 h-4 mr-2" />
+                    <span className="text-sm font-medium">🎉 You qualify for free shipping!</span>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>£{getTotalPrice().toFixed(2)}</span>
+                  <span>£{getSubtotal().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping:</span>
-                  <span className="text-green-600">Free</span>
+                  {isEligibleForFreeShipping() ? (
+                    <span className="text-green-600">Free</span>
+                  ) : (
+                    <span>£{getShippingCost().toFixed(2)}</span>
+                  )}
                 </div>
+                {!isEligibleForFreeShipping() && (
+                  <div className="flex justify-between text-sm text-blue-600">
+                    <span>Free shipping on orders over £50</span>
+                    <span>£{(50 - getSubtotal()).toFixed(2)} more needed</span>
+                  </div>
+                )}
                 <div className="border-t pt-2">
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total:</span>
-                    <span>£{getTotalPrice().toFixed(2)}</span>
+                    <span>£{getTotalWithShipping().toFixed(2)}</span>
                   </div>
                 </div>
               </div>

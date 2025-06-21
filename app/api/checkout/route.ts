@@ -56,6 +56,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Calculate shipping cost
+    const subtotal = items.reduce((total: number, item: any) => total + (item.price * item.quantity), 0)
+    const FREE_SHIPPING_THRESHOLD = 50
+    const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 4.99
+
     // Create line items for Stripe
     const lineItems = items.map((item: any) => {
       // Process image URL for Stripe compatibility
@@ -103,6 +108,21 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity,
       }
     })
+
+    // Add shipping cost as a line item if not free
+    if (shippingCost > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'gbp',
+          product_data: {
+            name: 'Shipping',
+            description: 'Standard UK delivery',
+          },
+          unit_amount: Math.round(shippingCost * 100), // Convert to pence
+        },
+        quantity: 1,
+      })
+    }
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({

@@ -15,10 +15,10 @@ export default function ShippingPage() {
             <div className="bg-green-50 p-6 rounded-lg">
               <div className="flex items-center mb-4">
                 <Truck className="w-8 h-8 text-green-600 mr-3" />
-                <h2 className="text-xl font-semibold text-green-900">Free UK Delivery</h2>
+                <h2 className="text-xl font-semibold text-green-900">Free UK Delivery Over £50</h2>
               </div>
               <p className="text-green-800">
-                Free standard delivery on all orders to mainland UK addresses. No minimum order required.
+                Free standard delivery on orders over £50 to mainland UK addresses. Orders under £50 incur a £4.99 shipping charge.
               </p>
             </div>
             
@@ -38,8 +38,12 @@ export default function ShippingPage() {
             <div className="bg-white border rounded-lg p-6 mb-6">
               <div className="space-y-4">
                 <div className="flex justify-between items-center border-b pb-2">
-                  <span className="font-medium">Standard Delivery (Free)</span>
+                  <span className="font-medium">Standard Delivery</span>
                   <span className="text-gray-600">2-3 business days</span>
+                </div>
+                <div className="flex justify-between items-center border-b pb-2 text-sm">
+                  <span className="text-gray-600">• Free on orders over £50</span>
+                  <span className="text-gray-600">• £4.99 on orders under £50</span>
                 </div>
                 <div className="flex justify-between items-center border-b pb-2">
                   <span className="font-medium">Express Delivery</span>

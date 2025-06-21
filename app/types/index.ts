@@ -57,5 +57,9 @@ export interface CartContextType {
   updateQuantity: (productId: string, quantity: number) => void
   getTotalItems: () => number
   getTotalPrice: () => number
+  getSubtotal: () => number
+  getShippingCost: () => number
+  getTotalWithShipping: () => number
+  isEligibleForFreeShipping: () => boolean
   clearCart: () => void
 }
