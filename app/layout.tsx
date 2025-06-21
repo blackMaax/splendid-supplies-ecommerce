@@ -16,10 +16,56 @@ const logoFont = Bebas_Neue({
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Splendid Supplies - Quality Tools & Building Supplies",
-  description:
-    "Your trusted supplier for tools, equipment, building supplies, roofing materials, and cleaning supplies. Free UK delivery and expert service.",
-    generator: 'v0.dev'
+  title: "Building Materials & Construction Supplies | Splendid Supplies",
+  description: "Quality building materials, construction tools, workwear & cleaning supplies. Shop online for lumber, safety equipment, power tools & more at competitive prices.",
+  keywords: "building materials, construction supplies, work tools, safety equipment, workwear, cleaning supplies, construction tools, building supplies, buy building materials online",
+  authors: [{ name: "Splendid Supplies" }],
+  creator: "Splendid Supplies",
+  publisher: "Splendid Supplies",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://splendidsupplies.shop',
+    siteName: 'Splendid Supplies',
+    title: 'Building Materials & Construction Supplies | Splendid Supplies',
+    description: 'Quality building materials, construction tools, workwear & cleaning supplies. Shop online for lumber, safety equipment, power tools & more at competitive prices.',
+    images: [
+      {
+        url: 'https://splendidsupplies.shop/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Splendid Supplies - Quality Building Materials & Construction Tools',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@Splendidcasa',
+    creator: '@Splendidcasa',
+    title: 'Building Materials & Construction Supplies | Splendid Supplies',
+    description: 'Quality building materials, construction tools, workwear & cleaning supplies. Shop online for lumber, safety equipment, power tools & more at competitive prices.',
+    images: ['https://splendidsupplies.shop/og-image.jpg'],
+  },
+  alternates: {
+    canonical: 'https://splendidsupplies.shop',
+  },
+  other: {
+    'theme-color': '#ffd700',
+    'msapplication-TileColor': '#ffd700',
+    'google-site-verification': 'GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE',
+    'msvalidate.01': 'BING_VERIFICATION_CODE',
+  },
 }
 
 export default function RootLayout({
@@ -28,7 +74,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" itemScope itemType="https://schema.org/WebSite">
+      <head>
+        <link rel="preload" href="/Splendid Supplies logo.webp" as="image" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+      </head>
       <body className={`${inter.className} ${logoFont.variable}`}>
         <AuthSessionProvider>
           <CartProvider>

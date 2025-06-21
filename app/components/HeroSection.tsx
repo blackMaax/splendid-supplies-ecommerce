@@ -20,7 +20,7 @@ export default function HeroSection() {
             <div className="selling-point-icon">
               <Truck size={20} />
             </div>
-            <span className="selling-point-text">Free Shipping on Orders Over £75</span>
+                            <span className="selling-point-text">Free Shipping on Orders Over £50</span>
           </div>
           
           <div className="selling-point">

@@ -1,11 +1,83 @@
+import Head from 'next/head'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { Phone, Mail, Clock, MapPin, MessageCircle } from 'lucide-react'
+import { SEO_CONFIGS, BRAND_INFO } from '../../lib/seo'
 
 export default function ContactPage() {
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact Splendid Supplies",
+    "description": "Get in touch with Splendid Supplies for building materials, construction supplies and work tools. Professional customer service and expert advice.",
+    "url": `https://${BRAND_INFO.domain}/contact`,
+    "mainEntity": {
+      "@type": "Organization",
+      "name": BRAND_INFO.name,
+      "url": `https://${BRAND_INFO.domain}`,
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+44-207-101-3408",
+          "contactType": "customer service",
+          "email": "Sales@SplendidCasa.uk",
+          "areaServed": "GB",
+          "availableLanguage": "English",
+          "hoursAvailable": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "09:00",
+              "closes": "18:00"
+            },
+            {
+              "@type": "OpeningHoursSpecification", 
+              "dayOfWeek": "Saturday",
+              "opens": "10:00",
+              "closes": "16:00"
+            }
+          ]
+        }
+      ]
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
+    <>
+      <Head>
+        {/* Primary Meta Tags */}
+        <title>{SEO_CONFIGS.contact.title}</title>
+        <meta name="description" content={SEO_CONFIGS.contact.description} />
+        <meta name="keywords" content={SEO_CONFIGS.contact.keywords} />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content={BRAND_INFO.name} />
+        <link rel="canonical" href={`https://${BRAND_INFO.domain}/contact`} />
+        
+        {/* Open Graph Meta Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={SEO_CONFIGS.contact.title} />
+        <meta property="og:description" content={SEO_CONFIGS.contact.description} />
+        <meta property="og:url" content={`https://${BRAND_INFO.domain}/contact`} />
+        <meta property="og:site_name" content={BRAND_INFO.name} />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={SEO_CONFIGS.contact.title} />
+        <meta name="twitter:description" content={SEO_CONFIGS.contact.description} />
+        <meta name="twitter:site" content="@Splendidcasa" />
+        
+        {/* Contact Page Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(contactSchema)
+          }}
+        />
+      </Head>
+      
+      <div className="min-h-screen bg-white">
+        <Header />
       
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
@@ -136,5 +208,6 @@ export default function ContactPage() {
       
       <Footer />
     </div>
+    </>
   )
 } 

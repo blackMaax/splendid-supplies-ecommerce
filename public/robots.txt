@@ -1,0 +1,60 @@
+# Robots.txt for splendidsupplies.shop
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Allow specific API endpoints that are public
+Allow: /api/products
+Allow: /api/categories
+
+# Disallow search result pages to avoid duplicate content
+Disallow: /*?search=*
+Disallow: /*?filter=*
+Disallow: /*?sort=*
+
+# Allow important pages
+Allow: /products
+Allow: /contact
+Allow: /about
+Allow: /shipping
+Allow: /returns
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
+Allow: /faq
+
+# Sitemap location
+Sitemap: https://splendidsupplies.shop/sitemap.xml
+
+# Crawl delay (optional, in seconds)
+Crawl-delay: 1
+
+# Specific instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots and scrapers
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: / 

@@ -28,6 +28,8 @@ import { useCart } from "../../context/CartContext"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
 import ProductCard from "../../components/ProductCard"
+import { createProductSEO } from "../../../hooks/use-seo"
+import { BRAND_INFO } from "../../../lib/seo"
 
 export default function ProductSlugPage() {
   const params = useParams()
@@ -233,22 +235,67 @@ export default function ProductSlugPage() {
 
   ]
 
+  // Generate SEO data for the product
+  const productSlug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const seoConfig = createProductSEO(
+    product.name,
+    product.description,
+    product.category,
+    currentPrice,
+    product.image,
+    productSlug
+  )
+
   return (
     <>
       <Head>
-        <title>{product.seoTitle || `${product.name} | Splendid Supplies`}</title>
-        <meta name="description" content={product.seoDescription || product.description} />
-        {product.seoKeywords && product.seoKeywords.length > 0 && (
-          <meta name="keywords" content={product.seoKeywords.join(', ')} />
-        )}
-        <meta property="og:title" content={product.seoTitle || product.name} />
-        <meta property="og:description" content={product.seoDescription || product.description} />
-        <meta property="og:image" content={product.image} />
+        {/* Primary Meta Tags */}
+        <title>{seoConfig.title}</title>
+        <meta name="description" content={seoConfig.description} />
+        <meta name="keywords" content={seoConfig.keywords} />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content={BRAND_INFO.name} />
+        <link rel="canonical" href={seoConfig.canonical} />
+        
+        {/* Open Graph Meta Tags */}
         <meta property="og:type" content="product" />
+        <meta property="og:title" content={seoConfig.title} />
+        <meta property="og:description" content={seoConfig.description} />
+        <meta property="og:image" content={`https://${BRAND_INFO.domain}${product.image}`} />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="600" />
+        <meta property="og:url" content={seoConfig.canonical} />
+        <meta property="og:site_name" content={BRAND_INFO.name} />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Product-specific Open Graph */}
         <meta property="product:price:amount" content={currentPrice.toString()} />
         <meta property="product:price:currency" content="GBP" />
         <meta property="product:availability" content={product.inStock ? "in stock" : "out of stock"} />
-        <link rel="canonical" href={`${process.env.NEXT_PUBLIC_DOMAIN}/product/${product.productUrl || product.id}`} />
+        <meta property="product:brand" content={product.brand || BRAND_INFO.name} />
+        <meta property="product:category" content={product.category} />
+        
+        {/* Twitter Card Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seoConfig.title} />
+        <meta name="twitter:description" content={seoConfig.description} />
+        <meta name="twitter:image" content={`https://${BRAND_INFO.domain}${product.image}`} />
+        <meta name="twitter:site" content="@Splendidcasa" />
+        
+        {/* Additional Meta Tags */}
+        <meta name="theme-color" content={BRAND_INFO.themeColor} />
+        <meta name="rating" content="General" />
+        
+        {/* Structured Data */}
+        {seoConfig.structuredData && seoConfig.structuredData.map((schema: any, index: number) => (
+          <script
+            key={index}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(schema)
+            }}
+          />
+        ))}
       </Head>
 
       <div className="min-h-screen premium-product-page-section">

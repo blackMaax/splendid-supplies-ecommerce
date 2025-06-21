@@ -130,10 +130,10 @@ export default function CategoryNav({
           </div>
 
           {/* Mobile Category Dropdown - Visible on mobile only */}
-          <div className="sm:hidden relative flex-1" ref={dropdownRef}>
+          <div className="sm:hidden relative flex-1 z-50" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="mobile-category-dropdown w-full flex items-center justify-between px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white font-medium transition-all duration-300"
+              className="mobile-category-dropdown w-full flex items-center justify-between px-4 py-2 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               <span className="truncate">
                 {activeCategory === "Tools, Equipment & Workwear" ? "Tools & Workwear" : activeCategory}
@@ -142,27 +142,26 @@ export default function CategoryNav({
             </button>
             
             {isDropdownOpen && (
-              <>
-                {/* Backdrop */}
-                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={() => setIsDropdownOpen(false)} />
-                
-                {/* Dropdown */}
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-64 overflow-y-auto">
-                  {categories.map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => handleCategorySelect(category)}
-                      className={`mobile-dropdown-item w-full text-left px-4 py-3 text-sm transition-colors duration-200 ${
-                        activeCategory === category 
-                          ? "bg-blue-50 text-blue-700 font-semibold" 
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
-                    >
+              <div className="mobile-dropdown-container absolute top-full left-0 right-0 mt-2 rounded-xl shadow-2xl z-[110] max-h-64 overflow-y-auto transform transition-all duration-200 ease-out backdrop-blur-sm">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => handleCategorySelect(category)}
+                    className={`mobile-dropdown-item w-full text-left px-4 py-3 text-sm font-medium transition-all duration-200 relative overflow-hidden ${
+                      activeCategory === category 
+                        ? "active font-bold shadow-lg transform scale-[1.02]" 
+                        : "hover:transform hover:scale-[1.01]"
+                    }`}
+                  >
+                    <span className="relative z-10">
                       {category === "Tools, Equipment & Workwear" ? "Tools & Workwear" : category}
-                    </button>
-                  ))}
-                </div>
-              </>
+                    </span>
+                    {activeCategory === category && (
+                      <div className="overlay absolute inset-0 animate-pulse"></div>
+                    )}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 

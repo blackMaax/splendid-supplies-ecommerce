@@ -24,6 +24,10 @@ export default function CookieSettingsPage() {
   })
   const [hasChanges, setHasChanges] = useState(false)
   const [showSaveNotification, setShowSaveNotification] = useState(false)
+  const [showAcceptAllNotification, setShowAcceptAllNotification] = useState(false)
+  const [showRejectAllNotification, setShowRejectAllNotification] = useState(false)
+  const [showResetNotification, setShowResetNotification] = useState(false)
+  const [toggleFeedback, setToggleFeedback] = useState<{[key: string]: boolean}>({})
 
   useEffect(() => {
     if (cookiePreferences) {
@@ -48,6 +52,12 @@ export default function CookieSettingsPage() {
       ...prev,
       [type]: !prev[type]
     }))
+
+    // Show toggle feedback
+    setToggleFeedback(prev => ({ ...prev, [type]: true }))
+    setTimeout(() => {
+      setToggleFeedback(prev => ({ ...prev, [type]: false }))
+    }, 1000)
   }
 
   const savePreferences = () => {
@@ -65,6 +75,8 @@ export default function CookieSettingsPage() {
       marketing: false
     }
     setLocalPreferences(defaults)
+    setShowResetNotification(true)
+    setTimeout(() => setShowResetNotification(false), 3000)
   }
 
   const acceptAll = () => {
@@ -75,6 +87,8 @@ export default function CookieSettingsPage() {
       marketing: true
     }
     setLocalPreferences(allAccepted)
+    setShowAcceptAllNotification(true)
+    setTimeout(() => setShowAcceptAllNotification(false), 3000)
   }
 
   const rejectAll = () => {
@@ -85,6 +99,8 @@ export default function CookieSettingsPage() {
       marketing: false
     }
     setLocalPreferences(essentialOnly)
+    setShowRejectAllNotification(true)
+    setTimeout(() => setShowRejectAllNotification(false), 3000)
   }
 
   return (
@@ -108,11 +124,32 @@ export default function CookieSettingsPage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Status Banner */}
+          {/* Status Banners */}
           {showSaveNotification && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3 animate-in fade-in duration-300">
               <Check className="w-5 h-5 text-green-600" />
-              <span className="text-green-800">Your cookie preferences have been saved successfully!</span>
+              <span className="text-green-800 font-medium">Your cookie preferences have been saved successfully!</span>
+            </div>
+          )}
+          
+          {showAcceptAllNotification && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center space-x-3 animate-in fade-in duration-300">
+              <Check className="w-5 h-5 text-blue-600" />
+              <span className="text-blue-800 font-medium">All cookies have been accepted! Don't forget to save your preferences.</span>
+            </div>
+          )}
+          
+          {showRejectAllNotification && (
+            <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg flex items-center space-x-3 animate-in fade-in duration-300">
+              <X className="w-5 h-5 text-orange-600" />
+              <span className="text-orange-800 font-medium">Only essential cookies are now enabled. Don't forget to save your preferences.</span>
+            </div>
+          )}
+          
+          {showResetNotification && (
+            <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg flex items-center space-x-3 animate-in fade-in duration-300">
+              <RotateCcw className="w-5 h-5 text-purple-600" />
+              <span className="text-purple-800 font-medium">Settings have been reset to defaults. Don't forget to save your preferences.</span>
             </div>
           )}
 
@@ -204,13 +241,13 @@ export default function CookieSettingsPage() {
                       <h3 className="text-lg font-semibold text-gray-800">Analytics Cookies</h3>
                       <button
                         onClick={() => handlePreferenceChange('analytics')}
-                        className={`w-14 h-7 rounded-full transition-colors relative ${
+                        className={`w-14 h-7 rounded-full transition-all duration-300 relative ${
                           localPreferences.analytics ? 'bg-blue-600' : 'bg-gray-300'
-                        }`}
+                        } ${toggleFeedback.analytics ? 'ring-4 ring-blue-200 scale-105' : ''}`}
                       >
-                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
+                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-all duration-300 shadow-sm ${
                           localPreferences.analytics ? 'translate-x-7' : 'translate-x-0.5'
-                        }`} />
+                        } ${toggleFeedback.analytics ? 'scale-110' : ''}`} />
                       </button>
                     </div>
                     <p className="text-gray-600">
@@ -256,13 +293,13 @@ export default function CookieSettingsPage() {
                       <h3 className="text-lg font-semibold text-gray-800">Preference Cookies</h3>
                       <button
                         onClick={() => handlePreferenceChange('preferences')}
-                        className={`w-14 h-7 rounded-full transition-colors relative ${
+                        className={`w-14 h-7 rounded-full transition-all duration-300 relative ${
                           localPreferences.preferences ? 'bg-blue-600' : 'bg-gray-300'
-                        }`}
+                        } ${toggleFeedback.preferences ? 'ring-4 ring-purple-200 scale-105' : ''}`}
                       >
-                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
+                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-all duration-300 shadow-sm ${
                           localPreferences.preferences ? 'translate-x-7' : 'translate-x-0.5'
-                        }`} />
+                        } ${toggleFeedback.preferences ? 'scale-110' : ''}`} />
                       </button>
                     </div>
                     <p className="text-gray-600">
@@ -307,13 +344,13 @@ export default function CookieSettingsPage() {
                       <h3 className="text-lg font-semibold text-gray-800">Marketing Cookies</h3>
                       <button
                         onClick={() => handlePreferenceChange('marketing')}
-                        className={`w-14 h-7 rounded-full transition-colors relative ${
+                        className={`w-14 h-7 rounded-full transition-all duration-300 relative ${
                           localPreferences.marketing ? 'bg-blue-600' : 'bg-gray-300'
-                        }`}
+                        } ${toggleFeedback.marketing ? 'ring-4 ring-orange-200 scale-105' : ''}`}
                       >
-                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
+                        <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-all duration-300 shadow-sm ${
                           localPreferences.marketing ? 'translate-x-7' : 'translate-x-0.5'
-                        }`} />
+                        } ${toggleFeedback.marketing ? 'scale-110' : ''}`} />
                       </button>
                     </div>
                     <p className="text-gray-600">
