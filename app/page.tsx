@@ -2,18 +2,29 @@
 
 import { useState } from "react"
 import Header from "./components/Header"
+import HeroSection from "./components/HeroSection"
 import CategoryNav from "./components/CategoryNav"
 import ProductGrid from "./components/ProductGrid"
 import Footer from "./components/Footer"
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All Products")
+  const [searchQuery, setSearchQuery] = useState("")
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Header />
-      <CategoryNav activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
-      <ProductGrid activeCategory={activeCategory} />
+      <HeroSection />
+      <CategoryNav 
+        activeCategory={activeCategory} 
+        onCategoryChange={setActiveCategory}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
+      <ProductGrid 
+        activeCategory={activeCategory} 
+        searchQuery={searchQuery}
+      />
       <Footer />
     </div>
   )

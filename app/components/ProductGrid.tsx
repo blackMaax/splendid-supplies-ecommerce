@@ -6,9 +6,10 @@ import ProductCard from "./ProductCard"
 
 interface ProductGridProps {
   activeCategory: string
+  searchQuery?: string
 }
 
-export default function ProductGrid({ activeCategory }: ProductGridProps) {
+export default function ProductGrid({ activeCategory, searchQuery = "" }: ProductGridProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -38,19 +39,77 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
     fetchProducts()
   }, [])
 
-  // Filter products by category
-  useEffect(() => {
-    if (activeCategory === "All Products") {
-      setFilteredProducts(products)
-    } else {
-      setFilteredProducts(products.filter((product) => product.category === activeCategory))
+  // Comprehensive search function
+  const searchProducts = (products: Product[], query: string): Product[] => {
+    if (!query.trim()) return products
+
+    const searchTerm = query.toLowerCase().trim()
+    
+    return products.filter((product) => {
+      // Search in product name
+      const nameMatch = product.name.toLowerCase().includes(searchTerm)
+      
+      // Search in product description
+      const descriptionMatch = product.description?.toLowerCase().includes(searchTerm) || false
+      
+      // Search in product category
+      const categoryMatch = product.category.toLowerCase().includes(searchTerm)
+      
+      // Search in product tags/keywords (if they exist)
+      const tagsMatch = product.tags?.some(tag => 
+        tag.toLowerCase().includes(searchTerm)
+      ) || false
+      
+      // Fuzzy search for common typos and partial matches
+      const fuzzyNameMatch = fuzzyMatch(product.name.toLowerCase(), searchTerm)
+      const fuzzyDescriptionMatch = product.description ? 
+        fuzzyMatch(product.description.toLowerCase(), searchTerm) : false
+      
+      return nameMatch || descriptionMatch || categoryMatch || tagsMatch || 
+             fuzzyNameMatch || fuzzyDescriptionMatch
+    })
+  }
+
+  // Simple fuzzy matching function
+  const fuzzyMatch = (text: string, pattern: string): boolean => {
+    // Remove spaces and special characters for fuzzy matching
+    const cleanText = text.replace(/[^a-z0-9]/g, '')
+    const cleanPattern = pattern.replace(/[^a-z0-9]/g, '')
+    
+    if (cleanPattern.length === 0) return false
+    if (cleanPattern.length > cleanText.length) return false
+    
+    let patternIndex = 0
+    for (let i = 0; i < cleanText.length && patternIndex < cleanPattern.length; i++) {
+      if (cleanText[i] === cleanPattern[patternIndex]) {
+        patternIndex++
+      }
     }
-  }, [activeCategory, products])
+    
+    return patternIndex === cleanPattern.length
+  }
+
+  // Filter products by category and search query
+  useEffect(() => {
+    let filtered = products
+
+    // First filter by category
+    if (activeCategory !== "All Products") {
+      filtered = filtered.filter((product) => product.category === activeCategory)
+    }
+
+    // Then apply search filter
+    if (searchQuery.trim()) {
+      filtered = searchProducts(filtered, searchQuery)
+    }
+
+    setFilteredProducts(filtered)
+  }, [activeCategory, searchQuery, products])
 
   if (loading) {
     return (
-      <section className="py-6 sm:py-8">
-        <div className="container mx-auto px-2 sm:px-4">
+      <section className="premium-product-section py-6 sm:py-8">
+        <div className="container mx-auto px-2 sm:px-4 relative z-10">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-8">
             {/* Loading skeleton */}
             {Array.from({ length: 8 }).map((_, index) => (
@@ -71,8 +130,8 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
 
   if (error) {
     return (
-      <section className="py-6 sm:py-8">
-        <div className="container mx-auto px-2 sm:px-4">
+      <section className="premium-product-section py-6 sm:py-8">
+        <div className="container mx-auto px-2 sm:px-4 relative z-10">
           <div className="text-center py-12">
             <p className="text-red-500 text-lg mb-4">{error}</p>
             <button 
@@ -87,9 +146,36 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
     )
   }
 
+  // Determine what message to show when no products found
+  const getNoResultsMessage = () => {
+    if (searchQuery.trim() && activeCategory !== "All Products") {
+      return `No products found for "${searchQuery}" in ${activeCategory}.`
+    } else if (searchQuery.trim()) {
+      return `No products found for "${searchQuery}".`
+    } else if (activeCategory !== "All Products") {
+      return `No products found in ${activeCategory}.`
+    }
+    return "No products found."
+  }
+
   return (
-    <section className="py-6 sm:py-8">
-      <div className="container mx-auto px-2 sm:px-4">
+    <section className="premium-product-section py-6 sm:py-8">
+      <div className="container mx-auto px-2 sm:px-4 relative z-10">
+        {/* Results summary */}
+        {(searchQuery.trim() || activeCategory !== "All Products") && (
+          <div className="mb-6 text-center">
+            <p className="text-white/80 text-sm sm:text-base">
+              {filteredProducts.length > 0 ? (
+                <>
+                  Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+                  {searchQuery.trim() && ` for "${searchQuery}"`}
+                  {activeCategory !== "All Products" && ` in ${activeCategory}`}
+                </>
+              ) : null}
+            </p>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-8">
           {filteredProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
@@ -98,7 +184,14 @@ export default function ProductGrid({ activeCategory }: ProductGridProps) {
 
         {filteredProducts.length === 0 && !loading && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No products found in this category.</p>
+            <div className="text-white/70 text-lg mb-4">
+              {getNoResultsMessage()}
+            </div>
+            {searchQuery.trim() && (
+              <p className="text-white/50 text-sm">
+                Try adjusting your search terms or browse our categories above.
+              </p>
+            )}
           </div>
         )}
       </div>

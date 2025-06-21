@@ -9,8 +9,8 @@ export default function Header() {
   const totalItems = getTotalItems()
 
   return (
-    <header className="premium-header text-white sticky top-0 z-50 shadow-2xl">
-      <div className="container mx-auto px-4 py-6">
+    <header className="premium-header text-white sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-6 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex-1"></div>
 

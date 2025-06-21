@@ -86,25 +86,25 @@ export default function ProductSlugPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen premium-product-page-section">
         <Header />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-32 mb-8"></div>
+            <div className="h-6 bg-white/20 rounded w-32 mb-8"></div>
             <div className="grid lg:grid-cols-2 gap-16">
               <div className="space-y-6">
-                <div className="h-[500px] bg-gray-200 rounded-lg"></div>
+                <div className="h-[500px] bg-white/20 rounded-lg backdrop-blur-sm"></div>
                 <div className="flex space-x-4">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="w-24 h-24 bg-gray-200 rounded-lg"></div>
+                    <div key={i} className="w-24 h-24 bg-white/20 rounded-lg backdrop-blur-sm"></div>
                   ))}
                 </div>
               </div>
               <div className="space-y-8">
                 <div className="space-y-4">
-                  <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-12 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-20 bg-gray-200 rounded"></div>
+                  <div className="h-8 bg-white/20 rounded w-3/4 backdrop-blur-sm"></div>
+                  <div className="h-12 bg-white/20 rounded w-1/2 backdrop-blur-sm"></div>
+                  <div className="h-20 bg-white/20 rounded backdrop-blur-sm"></div>
                 </div>
               </div>
             </div>
@@ -117,13 +117,13 @@ export default function ProductSlugPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen premium-product-page-section">
         <Header />
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+        <div className="container mx-auto px-4 py-12 text-center relative z-10">
+          <h1 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
             {error || 'Product Not Found'}
           </h1>
-          <Link href="/" className="text-blue-600 hover:text-blue-800">
+          <Link href="/" className="premium-back-button text-blue-300 hover:text-yellow-300 bg-blue-900/30 px-6 py-3 rounded-full backdrop-blur-sm transition-all duration-300">
             Return to Home
           </Link>
         </div>
@@ -265,29 +265,87 @@ export default function ProductSlugPage() {
         <link rel="canonical" href={`${process.env.NEXT_PUBLIC_DOMAIN}/product/${product.productUrl || product.id}`} />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="min-h-screen premium-product-page-section">
         <Header />
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 relative z-10">
           <Link
             href="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-all duration-300 hover:translate-x-1"
+            className="premium-back-button inline-flex items-center text-white hover:text-yellow-300 mb-8 transition-all duration-300 hover:translate-x-1"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Products
           </Link>
 
+          {/* Premium Product Info Bar */}
+          <div className="premium-product-info-bar text-black mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center space-x-6 flex-wrap gap-y-2">
+                {/* Stock Status */}
+                <div className="flex items-center space-x-2">
+                  {product.inStock ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-700" />
+                      <span className="font-semibold text-sm">
+                        {product.stock > 10 ? 'In Stock' : `Only ${product.stock} Left`}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle className="w-4 h-4 text-red-700" />
+                      <span className="font-semibold text-sm">Out of Stock</span>
+                    </>
+                  )}
+                </div>
+
+                {/* Free Shipping */}
+                <div className="flex items-center space-x-2">
+                  <Truck className="w-4 h-4 text-green-700" />
+                  <span className="font-semibold text-sm">Free UK Delivery</span>
+                </div>
+
+                {/* Estimated Delivery */}
+                <div className="flex items-center space-x-2">
+                  <Package className="w-4 h-4 text-blue-700" />
+                  <span className="font-semibold text-sm">2-3 Days Delivery</span>
+                </div>
+
+                {/* Category */}
+                <div className="flex items-center space-x-2">
+                  <Tag className="w-4 h-4 text-purple-700" />
+                  <span className="font-semibold text-sm">{product.category}</span>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="flex items-center space-x-4">
+                {product.weight && (
+                  <div className="flex items-center space-x-2">
+                    <Weight className="w-4 h-4 text-gray-700" />
+                    <span className="font-medium text-sm">{product.weight}kg</span>
+                  </div>
+                )}
+                
+                {/* Warranty Badge */}
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-4 h-4 text-blue-700" />
+                  <span className="font-medium text-sm">12 Month Warranty</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid lg:grid-cols-2 gap-16 mb-16">
             {/* Product Images */}
             <div className="space-y-6">
-              <div className="product-image-main h-[500px] flex items-center justify-center p-12 relative">
+              <div className="premium-product-image-container product-image-main h-[500px] flex items-center justify-center p-12 relative">
                 {product.onSale && (
-                  <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium z-10">
+                  <div className="premium-sale-badge absolute top-4 left-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full text-sm font-bold z-10 shadow-lg">
                     Sale
                   </div>
                 )}
                 {product.featured && (
-                  <div className="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium z-10">
+                  <div className="premium-featured-badge absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-4 py-2 rounded-full text-sm font-bold z-10 shadow-lg">
                     Featured
                   </div>
                 )}
@@ -306,7 +364,7 @@ export default function ProductSlugPage() {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`thumbnail-card flex-shrink-0 w-24 h-24 p-2 ${selectedImage === index ? "active" : ""}`}
+                      className={`premium-thumbnail-card thumbnail-card flex-shrink-0 w-24 h-24 p-2 ${selectedImage === index ? "active" : ""}`}
                     >
                       <Image
                         src={image || "/placeholder.svg"}
@@ -322,12 +380,12 @@ export default function ProductSlugPage() {
             </div>
 
             {/* Product Details */}
-            <div className="space-y-8">
-              <div>
+            <div className="premium-product-details space-y-8">
+              <div className="premium-product-header">
                 {product.brand && (
-                  <p className="text-blue-600 font-medium mb-2">{product.brand}</p>
+                  <p className="text-yellow-300 font-bold mb-2 text-lg drop-shadow-sm">{product.brand}</p>
                 )}
-                <h1 className="text-4xl font-bold text-gray-800 mb-4 leading-tight">{product.name}</h1>
+                <h1 className="text-4xl font-bold text-white mb-4 leading-tight drop-shadow-lg">{product.name}</h1>
                 
                 {/* Pricing */}
                 <div className="flex items-center space-x-4 mb-4">
@@ -336,24 +394,24 @@ export default function ProductSlugPage() {
                     {currentPrice.toFixed(2)}
                   </div>
                   {product.onSale && product.originalPrice && (
-                    <div className="text-xl text-gray-500 line-through">
+                    <div className="text-xl text-gray-300 line-through drop-shadow-sm">
                       £{product.originalPrice.toFixed(2)}
                     </div>
                   )}
                   {product.onSale && product.originalPrice && (
-                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
+                    <div className="premium-savings-badge bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
                       Save £{(product.originalPrice - currentPrice).toFixed(2)}
                     </div>
                   )}
                 </div>
 
-                <p className="text-gray-600 leading-relaxed text-lg">{product.description}</p>
+                <p className="text-gray-200 leading-relaxed text-lg drop-shadow-sm">{product.description}</p>
 
                 {/* Tags */}
                 {product.tags && product.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4">
                     {product.tags.map((tag, index) => (
-                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <span key={index} className="premium-tag inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md">
                         <Tag className="w-3 h-3 mr-1" />
                         {tag}
                       </span>
@@ -363,59 +421,55 @@ export default function ProductSlugPage() {
               </div>
 
               {/* Stock Status */}
-              <div className="space-y-2">
+              <div className="premium-stock-container space-y-2">
                 <div className="flex items-center space-x-2">
                   {product.inStock ? (
                     <>
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span className="text-green-600 font-medium">
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      <span className="text-green-300 font-medium drop-shadow-sm">
                         In Stock ({product.stock} available)
                       </span>
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-5 h-5 text-red-600" />
-                      <span className="text-red-600 font-medium">Out of Stock</span>
+                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                      <span className="text-red-300 font-medium drop-shadow-sm">Out of Stock</span>
                     </>
                   )}
                 </div>
                 {isLowStock && product.inStock && (
-                  <div className="flex items-center space-x-2 text-orange-600">
+                  <div className="premium-low-stock flex items-center space-x-2 text-orange-300 bg-orange-900/30 px-3 py-2 rounded-lg backdrop-blur-sm">
                     <AlertTriangle className="w-4 h-4" />
-                    <span className="text-sm">Only {product.stock} left in stock!</span>
+                    <span className="text-sm font-medium">Only {product.stock} left in stock!</span>
                   </div>
                 )}
               </div>
 
-              {/* Trust Badges */}
-              <div className="flex flex-wrap gap-4">
-                <div className="trust-badge">
+              {/* Product Benefits */}
+              <div className="premium-benefits flex flex-wrap gap-4">
+                <div className="premium-benefit inline-flex items-center space-x-2 text-green-300 text-sm bg-green-900/30 px-4 py-2 rounded-full backdrop-blur-sm">
                   <Truck className="w-4 h-4" />
-                  Free Delivery
-                </div>
-                <div className="trust-badge">
-                  <Shield className="w-4 h-4" />
-                  Warranty Included
+                  <span className="font-medium">Free UK Delivery</span>
                 </div>
                 {product.weight && (
-                  <div className="trust-badge">
+                  <div className="premium-benefit inline-flex items-center space-x-2 text-gray-300 text-sm bg-gray-800/50 px-4 py-2 rounded-full backdrop-blur-sm">
                     <Weight className="w-4 h-4" />
-                    {product.weight}kg
+                    <span className="font-medium">{product.weight}kg</span>
                   </div>
                 )}
               </div>
 
               {/* External Links */}
               {(product.productUrl || product.supplierUrl) && (
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-gray-800">External Links</h3>
+                <div className="premium-external-links space-y-2">
+                  <h3 className="font-semibold text-white drop-shadow-sm">External Links</h3>
                   <div className="flex flex-wrap gap-3">
                     {product.productUrl && (
                       <a
                         href={product.productUrl.startsWith('http') ? product.productUrl : `https://yourdomain.shop/product/${product.productUrl}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                        className="premium-external-link inline-flex items-center text-blue-300 hover:text-yellow-300 text-sm bg-blue-900/30 px-3 py-2 rounded-full backdrop-blur-sm transition-all duration-300"
                       >
                         <ExternalLink className="w-4 h-4 mr-1" />
                         Product Page
@@ -426,7 +480,7 @@ export default function ProductSlugPage() {
                         href={product.supplierUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm"
+                        className="premium-external-link inline-flex items-center text-blue-300 hover:text-yellow-300 text-sm bg-blue-900/30 px-3 py-2 rounded-full backdrop-blur-sm transition-all duration-300"
                       >
                         <ExternalLink className="w-4 h-4 mr-1" />
                         Supplier
@@ -438,9 +492,9 @@ export default function ProductSlugPage() {
 
               {/* Quantity and Add to Cart */}
               {product.inStock && (
-                <div className="space-y-6">
+                <div className="premium-quantity-cart space-y-6">
                   <div className="flex items-center space-x-6">
-                    <label className="font-semibold text-gray-700 text-lg">Quantity:</label>
+                    <label className="font-semibold text-white text-lg drop-shadow-sm">Quantity:</label>
                     <div className="quantity-selector">
                       <button
                         onClick={() => handleQuantityChange(quantity - 1)}
@@ -471,7 +525,7 @@ export default function ProductSlugPage() {
                     <button
                       onClick={handleAddToCart}
                       disabled={isAdding || !product.inStock}
-                      className={`add-to-cart-btn flex-1 ${isAdding ? "success" : ""} ${!product.inStock ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`premium-add-to-cart-page add-to-cart-btn flex-1 ${isAdding ? "success" : ""} ${!product.inStock ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {isAdding ? (
                         <>
@@ -488,12 +542,12 @@ export default function ProductSlugPage() {
 
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
-                      className={`floating-action-btn ${isWishlisted ? "text-red-500" : "text-gray-600"}`}
+                      className={`premium-floating-btn floating-action-btn ${isWishlisted ? "text-red-400" : "text-gray-300"}`}
                     >
                       <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
                     </button>
 
-                    <button className="floating-action-btn text-gray-600">
+                    <button className="premium-floating-btn floating-action-btn text-gray-300">
                       <Share2 className="w-5 h-5" />
                     </button>
                   </div>
@@ -501,29 +555,29 @@ export default function ProductSlugPage() {
               )}
 
               {!product.inStock && (
-                <div className="bg-gray-100 p-4 rounded-lg text-center">
-                  <p className="text-gray-600 font-medium">This item is currently out of stock</p>
-                  <p className="text-sm text-gray-500 mt-1">Check back soon or contact us for availability</p>
+                <div className="premium-out-of-stock bg-gradient-to-r from-gray-800/50 to-gray-700/50 backdrop-blur-sm p-6 rounded-xl text-center border border-gray-600/30">
+                  <p className="text-gray-300 font-medium text-lg">This item is currently out of stock</p>
+                  <p className="text-sm text-gray-400 mt-2">Check back soon or contact us for availability</p>
                 </div>
               )}
 
               {/* Accordion Sections */}
-              <div className="space-y-4">
+              <div className="premium-accordion space-y-4">
                 {accordionSections.map((section) => (
-                  <div key={section.id} className="accordion-section">
-                    <div className="accordion-header" onClick={() => toggleAccordion(section.id)}>
+                  <div key={section.id} className="premium-accordion-section accordion-section">
+                    <div className="premium-accordion-header accordion-header" onClick={() => toggleAccordion(section.id)}>
                       <div className="flex items-center space-x-3 flex-1">
-                        <div className="text-blue-600">{section.icon}</div>
-                        <h3 className="font-semibold text-gray-800">{section.title}</h3>
+                        <div className="text-yellow-400">{section.icon}</div>
+                        <h3 className="font-semibold text-white drop-shadow-sm">{section.title}</h3>
                       </div>
                       <ChevronDown
-                        className={`w-5 h-5 text-gray-600 transition-transform duration-300 ${
+                        className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${
                           expandedSection === section.id ? "rotate-180" : ""
                         }`}
                       />
                     </div>
-                    <div className={`accordion-content ${expandedSection === section.id ? "open" : ""}`}>
-                      <div className="px-20 pb-6 text-gray-600 slide-in-left">{section.content}</div>
+                    <div className={`premium-accordion-content accordion-content ${expandedSection === section.id ? "open" : ""}`}>
+                      <div className="px-20 pb-6 text-gray-200 slide-in-left">{section.content}</div>
                     </div>
                   </div>
                 ))}
@@ -533,8 +587,8 @@ export default function ProductSlugPage() {
 
           {/* Related Products */}
           {relatedProducts.length > 0 && (
-            <div className="mb-16">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">You might also like</h2>
+            <div className="premium-related-products mb-16">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center drop-shadow-lg">You might also like</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                 {relatedProducts.slice(0, 6).map((relatedProduct, index) => (
                   <ProductCard key={relatedProduct.id} product={relatedProduct} index={index} />
